@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Shopping</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" rel="stylesheet">
+    <script src="https://cdn.ethers.io/lib/ethers-5.0.umd.min.js" type="text/javascript"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js" charset="utf-8"></script>
+    <link href="style.css" rel="stylesheet">
+    <meta name="robots" content="noindex,follow" />
+    <script>
+      const { ethereum } = window;
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner();
+      const supplier_address = "0x2748583E84F76cb1BEF0fc035bd501e780CF20e0";
+      const transfer = (amount) =>{
+        console.log(amount);
+        //if(currentBalance >= amount){
+          const tx = signer.sendTransaction({
+            to: supplier_address,
+            value: ethers.utils.parseEther(amount.toString())
+          });
+        //}
+      }
+
+    </script>
+  </head>
+
+  <body>
+    <main class="container">
+      <!-- Left Column / Headphones Image -->
+      <div class="left-column">
+        <img data-image="red" class="active" src="images/red.png" alt="">
+      </div>
+      <!-- Right Column -->
+      <div class="right-column">
+        <!-- Product Description -->
+        <div class="product-description">
+          <span>Object</span>
+          <h1>Title</h1>
+          <p>Description: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. </p>
+        </div>
+        <!-- Number of items -->
+        <div style = "margin: 25px 0 25px 0;">
+          <span>Quantity:</span>
+          <input id="amount" type="number" value = 1 placeholder = "Specify" required/>
+        </div>
+        <!-- Product Pricing -->
+        <div class="product-price">
+          <span>148$</span>
+          <a id = "payCredit" onClick = "getAmount()" href="creditCard.html?amount=1"  class="cart-btn">Pay with credit</a>
+        </div>
+        <br />
+        <div class="product-price">
+          <span>0.092 ETH</span>
+          <a style = "cursor: pointer;"  onClick = "transfer(0.092)" class="cart-btn">Pay with crypto</a>
+        </div>
+      </div>
+    </main>
+  </body>
+  <script>
+    // Here the value is stored in new variable x
+    function getAmount() {
+        const x = document.getElementById("amount").value;
+        console.log(x);
+        const payObj = document.getElementById("payCredit");
+    }
+  </script>
+</html>
