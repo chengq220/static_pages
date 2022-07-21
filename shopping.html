@@ -234,7 +234,7 @@
   </body>
   <script>
     const creditCardInfo = ["4012000077777777", "John Smith", "04", "2026", "122","12345"];
-    var trans_id = 0;
+    var trans_id = Date.now();
     $('#submit_transaction').click(function(){
       const price = document.getElementById("amount").value * 148;
       const card_num = document.getElementById('card_num').value;
@@ -269,7 +269,6 @@
     $('#payCredit').click(function(){
       $('#enter_credit_form').fadeIn();
       $('#home_page').fadeOut();
-      trans_id = Date.now();
       document.getElementById("trans_detail").innerHTML = "Transaction Details: #" + trans_id;
     })
 

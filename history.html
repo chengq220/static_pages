@@ -9,7 +9,7 @@
 			body,html{
 				margin:0;
 				height:100%;
-			}
+			}}
 		</style>
 	</head>
 	<body>
@@ -61,7 +61,9 @@
 									<tr>
 										<th>Item</th>
 										<th>Amount</th>
-										<th>ID No.</th>
+										<th>Description</th>
+										<th>Transaction No.</th>
+										<th>Payment Method</th>
 										<th>Created On</th>
 									</tr>
 								</thead>
@@ -80,12 +82,12 @@
 		 </div>
 	</body>
 	<script>
-				//get the data in the form of JSON to be parsed and added to the page
-				const purchase_history = ['{"name":"candy", "amount":1, "id":123, "date": "May 12 2020"}', '{"name":"trasj", "amount":2, "id":1421, "date": "May 12 2021"}'];
+				const purchase_history = ['{"name":"candy", "amount":1, "description":"A great red headphone","transNum":123231, "method":"Credit Card", "date": "May 12 2020"}',
+				'{"name":"trash", "amount":123, "description":"A great red trash","transNum":11111, "method":"MetaMask", "date": "April 21 2022"}'];
 				if(purchase_history.length > 0){
 					for(let num_data = 0; num_data < purchase_history.length; num_data++){
 							const obj = JSON.parse(purchase_history[num_data]);
-							const data = [obj.name,obj.amount,obj.id,obj.date];
+							const data = [obj.name,obj.amount,obj.description,obj.transNum,obj.method,obj.date];
 							var newRow = document.createElement("tr");
 							const newCellsArray = [];
 							for (let num = 0; num < data.length; num++){
