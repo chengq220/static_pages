@@ -175,6 +175,7 @@
                <div id = "total_price" style = "text-align:right;"></div>
              </div>
              <div style = "text-align:center;padding:5px;margin-top:5px;" id = "status_code" hidden></div>
+             <input id = "payment-method" value = "Credit Card" hidden/>
             <div class="inputBox">
               <span>card number</span>
               <input id = "card_num" style = "padding: 5px" type="text" maxlength="16"  class="card-number-input" required>
@@ -235,8 +236,8 @@
   <script>
     const creditCardInfo = ["4012000077777777", "John Smith", "04", "2026", "122","12345"];
     var trans_id = Date.now();
+    var price = document.getElementById("amount").value * 148;
     $('#submit_transaction').click(function(){
-      const price = document.getElementById("amount").value * 148;
       const card_num = document.getElementById('card_num').value;
       const card_holder = document.getElementById('card_holder').value;
       const exp_m = document.getElementById('exp_mm').value;
@@ -284,6 +285,7 @@
     }
 
     const supplier_address = "0x2748583E84F76cb1BEF0fc035bd501e780CF20e0";
+    const payment_method = "MetaMask";
     const transfer = (amount) =>{
       const { ethereum } = window;
       var provider = new ethers.providers.Web3Provider(window.ethereum);
