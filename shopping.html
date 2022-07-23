@@ -68,6 +68,8 @@
         text-decoration: none;
         padding: 12px 30px;
         transition: all .5s;
+        width:100px;
+        text-align:center;
       }
       .cart-btn:hover {
         background-color: #64af3d;
@@ -136,24 +138,22 @@
             <span>Accessories</span>
             <h1>Sony Beats XIIII</h1>
             <p>Description: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. </p>
+            <p style = "color:black;padding-bottom:15px;">Price: $148 / 0.092 ETH</p>
           </div>
           <!-- Number of items -->
-          <br></br>
           <div style = "margin: 25px 0 25px 0;">
             <span style = "font-size:18px;">Select Your Quantity:</span>
             <input id="amount" type="number" value = 1 placeholder = "Specify" required/>
           </div>
           <br></br>
           <!-- Product Pricing -->
+          <h2 style = "">Pay With </h2>
           <div style = "width:70%;">
-            <div class="product-price">
-              <span>148$</span>
-              <a id = "payCredit" onClick = "startTransaction()" style = "cursor: pointer;" class="cart-btn">Pay with credit</a>
+            <div class="product-price" style = "margin-bottom: 25px;">
+              <a id = "payCredit" onClick = "startTransaction()" style = "cursor: pointer;" class="cart-btn" src = "./creditcard.png">Credit Card</a>
             </div>
-            <br />
             <div class="product-price">
-              <span>0.092 ETH</span>
-              <a style = "cursor: pointer;"  onClick = "transfer(0.092)" class="cart-btn">Pay with crypto</a>
+              <a style = "cursor: pointer;"  onClick = "transfer(0.092)" class="cart-btn">MetaMask</a>
             </div>
         </div>
         </div>
@@ -284,19 +284,38 @@
         document.getElementById("total_price").innerHTML = '$' + (148*document.getElementById("amount").value);
     }
 
+    //setting important variables
+    const { ethereum } = window;
+    var provider = new ethers.providers.Web3Provider(window.ethereum);
+    var signer = provider.getSigner();
+    var wallet_balance = 0;
+
+    const getBalance = async () =>{
+      var accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+      provider.getBalance(accounts[0]).then((balance) => {
+       // convert a currency unit from wei to ether
+       wallet_balance = ethers.utils.formatEther(balance);
+      })
+    }
+
+    //transfer from current wallet to another wallet
     const supplier_address = "0x2748583E84F76cb1BEF0fc035bd501e780CF20e0";
     const payment_method = "MetaMask";
-    const transfer = (amount) =>{
-      const { ethereum } = window;
-      var provider = new ethers.providers.Web3Provider(window.ethereum);
-      var signer = provider.getSigner();
-      console.log(amount);
-      //if(currentBalance >= amount){
+    const transfer = async (amount) =>{
+      // gets the balance of the accounts in ETH
+      const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+      const balance = await provider.getBalance(accounts[0]);
+      const balanceInEth = ethers.utils.formatEther(balance);
+
+      if(balanceInEth >= amount){
         const tx = signer.sendTransaction({
           to: supplier_address,
           value: ethers.utils.parseEther(amount.toString())
         });
-      //}
+      }else{
+        alert("not enough eth");
+        return;
+      }
     }
   </script>
 </html>
