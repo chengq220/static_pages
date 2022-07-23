@@ -290,14 +290,6 @@
     var signer = provider.getSigner();
     var wallet_balance = 0;
 
-    const getBalance = async () =>{
-      var accounts = await ethereum.request({ method: 'eth_requestAccounts' });
-      provider.getBalance(accounts[0]).then((balance) => {
-       // convert a currency unit from wei to ether
-       wallet_balance = ethers.utils.formatEther(balance);
-      })
-    }
-
     //transfer from current wallet to another wallet
     const supplier_address = "0x2748583E84F76cb1BEF0fc035bd501e780CF20e0";
     const payment_method = "MetaMask";
