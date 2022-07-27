@@ -82,11 +82,14 @@
 		 </div>
 	</body>
 	<script>
+				//get data from the database for the user
 				const purchase_history = ['{"name":"candy", "amount":1, "description":"A great red headphone","transNum":123231, "method":"Credit Card", "date": "May 12 2020"}',
 				'{"name":"trash", "amount":123, "description":"A great red trash","transNum":11111, "method":"MetaMask", "date": "April 21 2022"}'];
 				if(purchase_history.length > 0){
 					for(let num_data = 0; num_data < purchase_history.length; num_data++){
+						  //remove variable obj if the data is already parsed
 							const obj = JSON.parse(purchase_history[num_data]);
+							////////////////////////////////////
 							const data = [obj.name,obj.amount,obj.description,obj.transNum,obj.method,obj.date];
 							var newRow = document.createElement("tr");
 							const newCellsArray = [];
@@ -104,6 +107,7 @@
 						   $("#empty_transaction").hide();
 						});
 					} else{
+						//for the case when the user does not have any purchase history
 						$(document).ready(function() {
 						   $("#history_container").hide();
 						});

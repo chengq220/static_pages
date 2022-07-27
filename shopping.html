@@ -175,7 +175,7 @@
                <div id = "total_price" style = "text-align:right;"></div>
              </div>
              <div style = "text-align:center;padding:5px;margin-top:5px;" id = "status_code" hidden></div>
-             <input id = "payment-method" value = "Credit Card" hidden/>
+             <input id = "paymentMethod" value = "Credit Card" hidden/>
             <div class="inputBox">
               <span>card number</span>
               <input id = "card_num" style = "padding: 5px" type="text" maxlength="16"  class="card-number-input" required>
@@ -235,9 +235,12 @@
   </body>
   <script>
     const creditCardInfo = ["4012000077777777", "John Smith", "04", "2026", "122","12345"];
-    var trans_id = Date.now();
-    var price = document.getElementById("amount").value * 148;
+    const trans_id = Date.now();
     $('#submit_transaction').click(function(){
+      const payment_method = document.getElementById('paymentMethod').value;
+      console.log(payment_method);
+      const amount_purchase = document.getElementById("amount").value;
+      const costInDollar = amount_purchase * 148;
       const card_num = document.getElementById('card_num').value;
       const card_holder = document.getElementById('card_holder').value;
       const exp_m = document.getElementById('exp_mm').value;
@@ -259,6 +262,9 @@
       document.getElementById('status_code').innerHTML = "The transaction have been processed";
       $('#status_code').show();
       setTimeout(function(){
+            //********************************8
+            //add to databse trans_id, costInDollar, payment_method, amount_purchase if credit card info is correct
+            //*********************************8
             window.location.href = './history.html';
       }, 1000);
     })
@@ -278,7 +284,8 @@
       $('#home_page').fadeIn();
       $('#error_code').hide();
     })
-    // Here the value is stored in new variable x
+
+    //Function that updates the html of the purchase summary
     function startTransaction() {
         document.getElementById("quantity_info").innerHTML = 'Quantity: '+ document.getElementById("amount").value;
         document.getElementById("total_price").innerHTML = '$' + (148*document.getElementById("amount").value);
@@ -290,22 +297,31 @@
     var signer = provider.getSigner();
     var wallet_balance = 0;
 
-    //transfer from current wallet to another wallet
+    //transfer from current wallet to supplier wallet
     const supplier_address = "0x2748583E84F76cb1BEF0fc035bd501e780CF20e0";
-    const payment_method = "MetaMask";
+
+    //transfer between two wallets
     const transfer = async (amount) =>{
+      //get the price in ETH
+      const amount_purchase = document.getElementById("amount").value;
+      const payment_method = "MetaMask";
+      const costInETH = amount * amount_purchase;
+
       // gets the balance of the accounts in ETH
       const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
       const balance = await provider.getBalance(accounts[0]);
       const balanceInEth = ethers.utils.formatEther(balance);
 
-      if(balanceInEth >= amount){
+      if(balanceInEth >= costInETH){
         const tx = signer.sendTransaction({
           to: supplier_address,
-          value: ethers.utils.parseEther(amount.toString())
+          value: ethers.utils.parseEther(costInETH.toString())
         });
+        //**************************************8
+        //add the trans_id, amount_purchase,payment_method,costInETH to database after the transaction is successful
+        //*************************************8
       }else{
-        alert("not enough eth");
+        alert("Not enough eth");
         return;
       }
     }
