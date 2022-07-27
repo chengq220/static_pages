@@ -14,24 +14,55 @@
         margin:0;
       }
       .grid-box{
+        margin:0 auto;
         display:grid;
         align-items:center;
         justify-items:center;
-        width:100%;
+        grid-template-columns: repeat(3,1fr);
+        grid-template-rows: repeat(5,1fr);
+        width:70%;
         height:100%;
       }
-      button{
+      .mint{
         padding: 15px 40px 15px 40px;
         border-radius: 15px;
         font-size: 1.5rem;
         background-color: green;
+        color:white;
+        width:150%;
+        cursor:pointer;
+        grid-row-start: 4;
+        grid-column-start: 2;
+      }
+      .showURI{
+        grid-row-start:2;
+        grid-row-end:3;
+        grid-column-start: 2;
+        width:100%;
+        height:100%;
+        padding-bottom: 3rem;
+        border-radius: 50%;
+        border:10px solid #cfdcec;
+        overflow:hidden;
+        cursor:pointer;
+      }
+
+      #status{
+        grid-row-start:1;
+        grid-column-start: 1;
+        grid-column-end: 4;
+        width: 100%;
+        padding:25px;
+        text-align:center;
         color:white;
       }
     </style>
   </head>
   <body>
     <div class = "grid-box">
-      <button onClick = "mint()">Mint</button>
+      <div id = "status"></div>
+      <button class = "showURI"></button>
+      <button class = "mint" onClick = "mint()">MINT</button>
     </div>
   </body>
   <script>
@@ -65,11 +96,11 @@
           await nftTxn.wait();
           console.log(`${nftTxn.hash}`);
           window.open(`https://rinkeby.etherscan.io/tx/${nftTxn.hash}`, '_blank').focus();
-        }else{
-          console.log('error');
-          return;
         }
       }catch(error){
+        let obj = document.getElementById('status');
+        obj.innerHTML = error.data.message.toUpperCase();
+        obj.style.backgroundColor = "tomato";
         console.log(error.data.message);
       }
     }
