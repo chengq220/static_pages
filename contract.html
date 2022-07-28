@@ -13,56 +13,127 @@
         height:100%;
         margin:0;
       }
-      .grid-box{
-        margin:0 auto;
-        display:grid;
-        align-items:center;
-        justify-items:center;
-        grid-template-columns: repeat(3,1fr);
-        grid-template-rows: repeat(5,1fr);
-        width:70%;
-        height:100%;
-      }
-      .mint{
-        padding: 15px 40px 15px 40px;
-        border-radius: 15px;
-        font-size: 1.5rem;
-        background-color: green;
-        color:white;
-        width:150%;
-        cursor:pointer;
-        grid-row-start: 4;
-        grid-column-start: 2;
-      }
-      .showURI{
-        grid-row-start:2;
-        grid-row-end:3;
-        grid-column-start: 2;
-        width:100%;
-        height:100%;
-        padding-bottom: 3rem;
-        border-radius: 50%;
-        border:10px solid #cfdcec;
-        overflow:hidden;
-        cursor:pointer;
+
+      .wrapper{
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+        grid-auto-rows: minmax(100px, auto);
+        height:90%;
       }
 
-      #status{
-        grid-row-start:1;
-        grid-column-start: 1;
-        grid-column-end: 4;
-        width: 100%;
-        padding:25px;
-        text-align:center;
-        color:white;
+      .divider {
+        display:grid;
+        grid-column: 1 / 3;
+        grid-row: 1;
+        align-items: end;
       }
+      .tokenURI {
+        grid-column: 1/3;
+        grid-row: 2 / 5;
+      }
+      .meta-container{
+        display:grid;
+        margin: 0 auto;
+        justify-items:center;
+        margin-top:30px;
+        border:solid;
+        width:80%;
+        padding: 25px;
+        border-radius: 50px;
+      }
+      .meta-container img{
+        width:70%;
+        height:auto;
+        border-radius: 50px;
+      }
+
+      .transaction_form {
+        grid-column: 3 / 5;
+        grid-row: 1 / 5;
+        display:flex;
+        align-items:center;
+      }
+
+      .selection{
+        width:90%;
+        background-color: gray;
+        margin:0 auto;
+        height:20%;
+        border-radius: 15px;
+        margin-top:20px;
+        display:flex;
+        align-items:center;
+      }
+
+      .selection img{
+        width: 15%;
+        border-radius:15px;
+        margin-left: 25px;
+      }
+
+      .mint-info{
+        color:black;
+        width: 90%;
+        margin: 0 auto;
+        margin-top:15px;
+        padding:40px;
+        border-radius:25px;
+        font-size:20px;
+      }
+
+      .mint-button{
+        margin: 0 auto;
+        width:80%;
+        height:15%;
+        border:solid;
+        background-color:green;
+        display:flex;
+        justify-content: center;
+        align-items: center;
+        color:white;
+        border-radius: 10px;
+        font-size:2rem;
+        cursor:pointer;
+        margin-top:15px;
+      }
+
     </style>
   </head>
   <body>
-    <div class = "grid-box">
-      <div id = "status"></div>
-      <button class = "showURI"></button>
-      <button class = "mint" onClick = "mint()">MINT</button>
+    <div style = "background-color:orange;width:100%;height:10%;justify-content: center;display:flex;align-items:center" class = "navbar">Navbar</div>
+    <div class="wrapper">
+      <div class="divider">
+        <div id = "status" style = "text-align:center;font-size:35px;">Welcome to UNCC Mascot NFT Site</div>
+        <div style = "width:100%;background-color:green;height:15%;"></div>
+      </div>
+      <div class="tokenURI">
+        <div class = "meta-container">
+          <img src = "./images/unccniner.png" />
+          <p style = "font-weight: bold;">University of North Carolina Mascot Niner</p>
+          <p>#3225</p>
+        </div>
+      </div>
+      <div class="transaction_form">
+        <div style = "width:80%;height:85%; margin:0 auto;border:solid;border-radius:15px;">
+          <h1 style = "text-align:center;text-decoration:underline;">Mint Checkout</h1>
+          <div class = "selection">
+            <img src = "./images/unccniner.png" />
+            <div style = "color: white;font-weight: 500;margin-left: 25px;">
+              <div>#3225</div>
+              <div>UNCC Mascot</div>
+            </div>
+            <div>
+              <input style = "height:50%;font-size:35px;border-radius:5px;" type="number" id="quantity" name="quantity" min="1" max="5">
+            </div>
+          </div>
+          <div class = "mint-info">
+            <div style = "margin-bottom:10px;">Mint fee: 1%</div>
+            <div>Price: 0.05 ETH Per Token</div>
+          </div>
+          <div onClick = "mint()"class = "mint-button">MINT</div>
+        </div>
+      </div>
     </div>
   </body>
   <script>
