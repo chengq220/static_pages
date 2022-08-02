@@ -38,6 +38,9 @@
         margin:0 auto;
         cursor: pointer;
       }
+      .output{
+        text-align:center;
+      }
       .mint_function{
         width:75%;
         background-color: rgb(16, 91, 91);
@@ -70,7 +73,7 @@
         padding: 10px;
         margin-top:40px;
       }
-      .status{
+      #status{
         height:5%;
         background-color: rgb(48, 183, 59);
         display:flex;
@@ -83,28 +86,24 @@
   </head>
   <body>
     <div style = "background-color:orange;width:100%;height:10%;justify-content: center;display:flex;align-items:center" class = "navbar">Navbar</div>
-    <div class = "status"><h4>Welcome to the MINTING PAGE</h4></div>
+    <div id = "status"><h4>Welcome to the MINTING PAGE</h4></div>
     <div class="wrapper">
       <div class = "read_function">
         <div>
-          <div class = "function">Own NFT</div>
-          <div class = "output output_1"></div>
+          <div onClick = "checkEnabled()" class = "function">Contract Mint Status</div>
+          <div id = "mint-status" class = "output "></div>
         </div>
         <div>
-          <div class = "function">Own NFT</div>
-          <div class = "output output_1"></div>
+          <div onClick = "getPrice()" class = "function">Price</div>
+          <div  id = "price" class = "output"></div>
         </div>
         <div>
-          <div class = "function">Own NFT</div>
-          <div class = "output output_1"></div>
+          <div onClick = "getAmountOwned()" class = "function">Inventory</div>
+          <div id = "inventory" class = "output"></div>
         </div>
         <div>
-          <div class = "function">Own NFT</div>
-          <div class = "output output_1"></div>
-        </div>
-        <div>
-          <div class = "function">Own NFT</div>
-          <div class = "output output_1"></div>
+          <div onClick = "remainingSupply()"class = "function">Supply</div>
+          <div id = "token-left" class = "output"></div>
         </div>
           
       </div>
@@ -122,42 +121,122 @@
     </div>
   </body>
   <script>
+    //set up the important tools
+    const { ethereum } = window;
+    var provider = new ethers.providers.Web3Provider(window.ethereum);
+    var signer = provider.getSigner();
+    //uncc contract 
+    const contractAddress = "0x41bf860825ffdca01cd130a1cd3fc21088f04aa2";
+    //const contractAddress = "0xb15275bE4573AFB78f084b97682BB68dd33084d6";
+
+    //update the website to reflect the minting status
+    const checkEnabled = async() =>{
+      //import and parse the json that contains the function of the smart contract
+      let contract;
+      const res = await fetch('./contracts/UNCCMintContract.json');
+      //const res = await fetch('./contracts/NewMintNet.json');
+      contract = await res.json();
+      //information of the contract
+      const abi = contract.abi;
+      //create the instance of smart contract
+      const nftContract = new ethers.Contract(contractAddress, abi, signer);
+      let mint_stat= await nftContract.isMintEnabled();
+      console.log(mint_stat)
+      let status = "Minting is not enabled";
+      if(mint_stat){
+        status = "Minting is enabled"
+      }
+      let obj = document.getElementById('mint-status');
+      obj.innerHTML = status;
+    }
+
+    //update the website to show the price to mint a token
+    const getPrice = async() =>{
+      //import and parse the json that contains the function of the smart contract
+      let contract;
+      const res = await fetch('./contracts/UNCCMintContract.json');
+      //const res = await fetch('./contracts/NewMintNet.json');
+      contract = await res.json();
+      //information of the contract
+      const abi = contract.abi;
+      //create the instance of smart contract
+      const nftContract = new ethers.Contract(contractAddress, abi, signer);
+      let price_hex= await nftContract.pricePerToken();
+      //convert the hexadecimal price value into decimal form and then convert unit of Wei to ETH
+      let price = ethers.utils.formatEther(parseInt(price_hex._hex, 16).toString());
+      let obj = document.getElementById('price');
+      obj.innerHTML = ('The minting price is' + price.toString() + 'ETH');
+    }
+
+    //update the website to show the amount owned by the user
+    const getAmountOwned = async() => {
+      //import and parse the json that contains the function of the smart contract
+      let contract;
+      const res = await fetch('./contracts/UNCCMintContract.json');
+      //const res = await fetch('./contracts/NewMintNet.json');
+      contract = await res.json();
+      //information of the contract
+      const abi = contract.abi;
+      //create the instance of smart contract
+      const nftContract = new ethers.Contract(contractAddress, abi, signer);
+      const accounts = await ethereum.request({method: 'eth_accounts'});
+
+      let amount= await nftContract.mintedWallet(accounts[0]);
+      //convert the hexadecimal price value into decimal form and then convert unit of Wei to ETH
+      let inventory = parseInt(amount._hex, 16).toString();
+      let obj = document.getElementById('inventory');
+      obj.innerHTML = (inventory.toString() + ' Tokens Exist In Your Inventory');
+    }
+
+      //update the website to show the supply remaining
+      const remainingSupply = async() => {
+      //import and parse the json that contains the function of the smart contract
+      let contract;
+      const res = await fetch('./contracts/UNCCMintContract.json');
+      //const res = await fetch('./contracts/NewMintNet.json');
+      contract = await res.json();
+      //information of the contract
+      const abi = contract.abi;
+      //create the instance of smart contract
+      const nftContract = new ethers.Contract(contractAddress, abi, signer);
+      let remaining= await nftContract.supplyRemaining();
+      //convert the hexadecimal price value into decimal form and then convert unit of Wei to ETH
+      let supply_remaining = parseInt(remaining._hex, 16).toString();
+      let obj = document.getElementById('token-left');
+      obj.innerHTML = (supply_remaining.toString() + ' Tokens remain to be minted');
+    }
+
     const mint = async() =>{
-      //set up the important tools
-      const { ethereum } = window;
-      var provider = new ethers.providers.Web3Provider(window.ethereum);
-      var signer = provider.getSigner();
+      //import and parse the json that contains the function of the smart contract
+      let contract;
+      const res = await fetch('./contracts/UNCCMintContract.json');
+      //const res = await fetch('./contracts/NewMintNet.json');
+      contract = await res.json();
+      //information of the contract
+      const abi = contract.abi;
+      //create the instance of smart contract
+      const nftContract = new ethers.Contract(contractAddress, abi, signer);
       //get the account information
       const accounts = await ethereum.request({method: 'eth_accounts'});
       const balance = ethers.utils.formatEther(await provider.getBalance(accounts[0]));
-      //import and parse the json that contains the function of the smart contract
-      let contract;
-      const res = await fetch('./contracts/NewMintNet.json')
-      contract = await res.json();
-      //information of the contract
-      const contractAddress = "0xb15275bE4573AFB78f084b97682BB68dd33084d6";
-      const abi = contract.abi;
-      //console.log(abi)
-
-      //create the instance of smart contract
-      const nftContract = new ethers.Contract(contractAddress, abi, signer);
-
+      //the receiver of the transaction which is myself
       test_set = "0xa8771787a37566246706f0e0eabe54f922f2dbb67ff2d20911fe95bcb93a72ad";
       /*Calls the mint function in the smart contract*/
-      const price = 0.05
+      const price = 0.05;
       try{
         if(balance >= price){ //checks to make sure balance of the account is greater than the price
           let nftTxn = await nftContract.mint({ value: ethers.utils.parseEther(price.toString()) });
           console.log("Mining... please wait");
           await nftTxn.wait();
           console.log(`${nftTxn.hash}`);
-          window.open(`https://rinkeby.etherscan.io/tx/${nftTxn.hash}`, '_blank').focus();
+          window.open(`https://rinkeby.etherscan.io/tx/${nftTxn.hash}`, '_blank');
         }
       }catch(error){
         let obj = document.getElementById('status');
         obj.innerHTML = error.data.message.toUpperCase();
+        //obj.innerHTML = error
         obj.style.backgroundColor = "tomato";
-        console.log(error.data.message);
+        console.log(error);
       }
     }
   </script>
