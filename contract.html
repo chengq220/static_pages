@@ -15,165 +15,237 @@
       }
 
       .wrapper{
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 10px;
-        grid-auto-rows: minmax(100px, auto);
         height:90%;
+        display: flex;
+      }
+      .read_function{
+        width:20%;
+        background-color:rgb(136, 170, 146);
       }
 
-      .divider {
-        display:grid;
-        grid-column: 1 / 3;
-        grid-row: 1;
-        align-items: end;
-      }
-      .tokenURI {
-        grid-column: 1/3;
-        grid-row: 2 / 5;
-      }
-      .meta-container{
-        display:grid;
-        margin: 0 auto;
-        justify-items:center;
-        margin-top:30px;
-        border:solid;
-        width:80%;
-        padding: 25px;
-        border-radius: 50px;
-      }
-      .meta-container img{
-        width:70%;
-        height:auto;
-        border-radius: 50px;
-      }
-
-      .transaction_form {
-        grid-column: 3 / 5;
-        grid-row: 1 / 5;
-        display:flex;
-        align-items:center;
-      }
-
-      .selection{
-        width:90%;
-        background-color: gray;
+      .function{
+        border: solid black;
+        border-radius: 10px;
+        padding: 15px;
+        text-align:center;
         margin:0 auto;
-        height:20%;
-        border-radius: 15px;
-        margin-top:20px;
-        display:flex;
-        align-items:center;
+        cursor: pointer;
+        background-color:aliceblue;
+        margin-bottom:10px;
       }
-
-      .selection img{
-        width: 15%;
-        border-radius:15px;
-        margin-left: 25px;
+      .mint_function{
+        width:80%;
+        display:grid;
+        align-items: center;
       }
-
-      .mint-info{
-        color:black;
-        width: 90%;
+      .nft_description{
         margin: 0 auto;
-        margin-top:15px;
-        padding:40px;
-        border-radius:25px;
-        font-size:20px;
+        text-align:center;
+        border: solid black;
+        border-radius: 25px;
+        width:50%;
       }
-
+      .nft_description img{
+        width:75%;
+      }
       .mint-button{
         margin: 0 auto;
-        width:80%;
+        width:60%;
         height:15%;
         border:solid;
-        background-color:green;
         display:flex;
+        background-color: green;
         justify-content: center;
         align-items: center;
         color:white;
         border-radius: 10px;
         font-size:2rem;
         cursor:pointer;
-        margin-top:15px;
+        padding: 10px;
+        margin-top:40px;
       }
+      #status{
+        height:5%;
+        display:flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .output-console{
+        width:90%;
+        background-color: white;
+        height:40%;
+        border: solid black;
+        margin: 0 auto;
+        text-align:center;
+        overflow-y: scroll;
+      }
+
 
     </style>
   </head>
   <body>
     <div style = "background-color:orange;width:100%;height:10%;justify-content: center;display:flex;align-items:center" class = "navbar">Navbar</div>
     <div class="wrapper">
-      <div class="divider">
-        <div id = "status" style = "text-align:center;font-size:35px;">Welcome to UNCC Mascot NFT Site</div>
-        <div style = "width:100%;background-color:green;height:15%;"></div>
-      </div>
-      <div class="tokenURI">
-        <div class = "meta-container">
-          <img src = "./images/unccniner.png" />
-          <p style = "font-weight: bold;">University of North Carolina Mascot Niner</p>
-          <p>#3225</p>
-        </div>
-      </div>
-      <div class="transaction_form">
-        <div style = "width:80%;height:85%; margin:0 auto;border:solid;border-radius:15px;">
-          <h1 style = "text-align:center;text-decoration:underline;">Mint Checkout</h1>
-          <div class = "selection">
-            <img src = "./images/unccniner.png" />
-            <div style = "color: white;font-weight: 500;margin-left: 25px;">
-              <div>#3225</div>
-              <div>UNCC Mascot</div>
-            </div>
-            <div>
-              <input style = "height:50%;font-size:35px;border-radius:5px;" type="number" id="quantity" name="quantity" min="1" max="5">
-            </div>
+      <div class = "read_function">
+          <img style = "padding: 15px; width:20%;" src = "/images/nft_logo.png" />
+          <h3 style = "text-align:center;margin-bottom:30px;">Smart Contract Summary</h3>
+          <div>
+            <div onClick = "checkEnabled()" class = "function">Status</div>
           </div>
-          <div class = "mint-info">
-            <div style = "margin-bottom:10px;">Mint fee: 1%</div>
-            <div>Price: 0.05 ETH Per Token</div>
+          <div>
+            <div onClick = "getPrice()" class = "function">Price</div>
           </div>
-          <div onClick = "mint()"class = "mint-button">MINT</div>
+          <div>
+            <div onClick = "getAmountOwned()" class = "function">Inventory</div>
+          </div>
+          <div>
+            <div onClick = "remainingSupply()"class = "function">Supply</div>
+          </div>
+          <div id = "output" class = "output-console"><span style = "margin-bottom: 5px;font-weight: bold;">Output Console</span></div>
+      </div>
+      <div class = "mint_function">
+        <div>
+          <div class = "nft_description">
+            <img src = "images/unccniner.png"/>
+            <div style = "width:100%;font-weight: bold;">University of North Carolina Mascot Niner</div>
+            <div>#3252</div>
+          </div>
+          <div onClick = "mint()" class = "mint-button">Mint</div>
+          <div style = "text-align:center;padding: 5px;">Please read the terms and services</div>
         </div>
       </div>
     </div>
   </body>
   <script>
+    //set up the important tools
+    const { ethereum } = window;
+    var provider = new ethers.providers.Web3Provider(window.ethereum);
+    var signer = provider.getSigner();
+    //uncc contract 
+    const contractAddress = "0x41bf860825ffdca01cd130a1cd3fc21088f04aa2";
+    //const contractAddress = "0xb15275bE4573AFB78f084b97682BB68dd33084d6";
+
+    //update the website to reflect the minting status
+    const checkEnabled = async() =>{
+      //import and parse the json that contains the function of the smart contract
+      let contract;
+      const res = await fetch('./contracts/UNCCMintContract.json');
+      //const res = await fetch('./contracts/NewMintNet.json');
+      contract = await res.json();
+      //information of the contract
+      const abi = contract.abi;
+      //create the instance of smart contract
+      const nftContract = new ethers.Contract(contractAddress, abi, signer);
+      let mint_stat= await nftContract.isMintEnabled();
+      //console.log(mint_stat)
+      let status = "Minting is not enabled";
+      if(mint_stat){
+        status = "Minting is enabled"
+      }
+      let obj = document.getElementById('output');
+      obj.innerHTML += "<br>" + status;
+    }
+
+    //update the website to show the price to mint a token
+    const getPrice = async() =>{
+      //import and parse the json that contains the function of the smart contract
+      let contract;
+      const res = await fetch('./contracts/UNCCMintContract.json');
+      //const res = await fetch('./contracts/NewMintNet.json');
+      contract = await res.json();
+      //information of the contract
+      const abi = contract.abi;
+      //create the instance of smart contract
+      const nftContract = new ethers.Contract(contractAddress, abi, signer);
+      let price_hex= await nftContract.pricePerToken();
+      //convert the hexadecimal price value into decimal form and then convert unit of Wei to ETH
+      let price = ethers.utils.formatEther(parseInt(price_hex._hex, 16).toString());
+      let obj = document.getElementById('output');
+      obj.innerHTML += ("<br>" + 'The minting price is ' + price.toString() + ' ETH');
+    }
+
+    //update the website to show the amount owned by the user
+    const getAmountOwned = async() => {
+      //import and parse the json that contains the function of the smart contract
+      let contract;
+      const res = await fetch('./contracts/UNCCMintContract.json');
+      //const res = await fetch('./contracts/NewMintNet.json');
+      contract = await res.json();
+      //information of the contract
+      const abi = contract.abi;
+      //create the instance of smart contract
+      const nftContract = new ethers.Contract(contractAddress, abi, signer);
+      const accounts = await ethereum.request({method: 'eth_accounts'});
+
+      let amount= await nftContract.mintedWallet(accounts[0]);
+      //convert the hexadecimal price value into decimal form and then convert unit of Wei to ETH
+      let inventory = parseInt(amount._hex, 16).toString();
+      let obj = document.getElementById('output');
+      obj.innerHTML += ("<br>" + inventory.toString() + ' Tokens Exist In Your Inventory');
+    }
+
+      //update the website to show the supply remaining
+      const remainingSupply = async() => {
+      //import and parse the json that contains the function of the smart contract
+      let contract;
+      const res = await fetch('./contracts/UNCCMintContract.json');
+      //const res = await fetch('./contracts/NewMintNet.json');
+      contract = await res.json();
+      //information of the contract
+      const abi = contract.abi;
+      //create the instance of smart contract
+      const nftContract = new ethers.Contract(contractAddress, abi, signer);
+      let remaining= await nftContract.supplyRemaining();
+      //convert the hexadecimal price value into decimal form and then convert unit of Wei to ETH
+      let supply_remaining = parseInt(remaining._hex, 16).toString();
+      let obj = document.getElementById('output');
+      obj.innerHTML += ("<br>" + supply_remaining.toString() + ' Tokens remain to be minted');
+    }
+
     const mint = async() =>{
-      //set up the important tools
-      const { ethereum } = window;
-      var provider = new ethers.providers.Web3Provider(window.ethereum);
-      var signer = provider.getSigner();
+      //import and parse the json that contains the function of the smart contract
+      let contract;
+      const res = await fetch('./contracts/UNCCMintContract.json');
+      //const res = await fetch('./contracts/NewMintNet.json');
+      contract = await res.json();
+      //information of the contract
+      const abi = contract.abi;
+      //create the instance of smart contract
+      const nftContract = new ethers.Contract(contractAddress, abi, signer);
       //get the account information
       const accounts = await ethereum.request({method: 'eth_accounts'});
       const balance = ethers.utils.formatEther(await provider.getBalance(accounts[0]));
-      //import and parse the json that contains the function of the smart contract
-      let contract;
-      const res = await fetch('./contracts/NewMintNet.json')
-      contract = await res.json();
-      //information of the contract
-      const contractAddress = "0xb15275bE4573AFB78f084b97682BB68dd33084d6";
-      const abi = contract.abi;
-      //console.log(abi)
-
-      //create the instance of smart contract
-      const nftContract = new ethers.Contract(contractAddress, abi, signer);
-
+      //the receiver of the transaction which is myself
       test_set = "0xa8771787a37566246706f0e0eabe54f922f2dbb67ff2d20911fe95bcb93a72ad";
       /*Calls the mint function in the smart contract*/
-      const price = 0.05
+      const price = 0.05;
       try{
         if(balance >= price){ //checks to make sure balance of the account is greater than the price
           let nftTxn = await nftContract.mint({ value: ethers.utils.parseEther(price.toString()) });
+          let obj = document.getElementById('output');
+          obj.innerHTML += "<br>" + "<span style = 'background-color:green;color:white'>" + "Mining In Process"+ "</span>";
           console.log("Mining... please wait");
           await nftTxn.wait();
+          obj.innerHTML += "<br>"+ "<span style = 'background-color:green;color:white'>" + `${nftTxn.hash}`+ "</span>";
+          obj.innerHTML += "<br>"+ "<span style = 'background-color:green;color:white'>" + "Completed"+ "</span>";
           console.log(`${nftTxn.hash}`);
-          window.open(`https://rinkeby.etherscan.io/tx/${nftTxn.hash}`, '_blank').focus();
+          obj.innerHTML += "<br>"+ "<span style = 'background-color:green;color:white'>" + "Trying to open " + `https://rinkeby.etherscan.io/tx/${nftTxn.hash}` + "</span>";
+          window.open(`https://rinkeby.etherscan.io/tx/${nftTxn.hash}`, '_blank');
         }
       }catch(error){
-        let obj = document.getElementById('status');
-        obj.innerHTML = error.data.message.toUpperCase();
-        obj.style.backgroundColor = "tomato";
-        console.log(error.data.message);
+        let obj = document.getElementById('output');
+        obj.innerHTML += "<br>" + "<span style = 'background-color:tomato'>" + error.data.message.toUpperCase() + "</span>";
+        //obj.innerHTML = error
+        console.log(error);
       }
     }
+
+    //scrolls down to the bottom for the output
+    window.setInterval(function() {
+      //console.log('fired')
+      var elem = document.getElementById('output');
+      elem.scrollTop = elem.scrollHeight;
+    }, 3000);
   </script>
 </html>
