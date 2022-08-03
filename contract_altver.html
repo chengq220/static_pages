@@ -15,37 +15,28 @@
       }
 
       .wrapper{
-        height:85%;
+        height:90%;
         display: flex;
       }
       .read_function{
-        width:25%;
-        background-color: aqua;
-        display:grid;
-        grid-template-columns: 1;
-        grid-template-rows: 5;
+        width:20%;
+        background-color:rgb(136, 170, 146);
       }
 
-      .read_function div{
-        margin-top: 10px;
-      }
       .function{
         border: solid black;
         border-radius: 10px;
         padding: 15px;
-        width:50%;
         text-align:center;
         margin:0 auto;
         cursor: pointer;
-      }
-      .output{
-        text-align:center;
+        background-color:aliceblue;
+        margin-bottom:10px;
       }
       .mint_function{
-        width:75%;
-        background-color: rgb(16, 91, 91);
+        width:80%;
         display:grid;
-        align-items:center;
+        align-items: center;
       }
       .nft_description{
         margin: 0 auto;
@@ -62,8 +53,8 @@
         width:60%;
         height:15%;
         border:solid;
-        background-color:green;
         display:flex;
+        background-color: green;
         justify-content: center;
         align-items: center;
         color:white;
@@ -75,10 +66,19 @@
       }
       #status{
         height:5%;
-        background-color: rgb(48, 183, 59);
         display:flex;
         justify-content: center;
         align-items: center;
+      }
+
+      .output-console{
+        width:90%;
+        background-color: white;
+        height:40%;
+        border: solid black;
+        margin: 0 auto;
+        text-align:center;
+        overflow-y: scroll;
       }
 
 
@@ -86,26 +86,23 @@
   </head>
   <body>
     <div style = "background-color:orange;width:100%;height:10%;justify-content: center;display:flex;align-items:center" class = "navbar">Navbar</div>
-    <div id = "status"><h4>Welcome to the MINTING PAGE</h4></div>
     <div class="wrapper">
       <div class = "read_function">
-        <div>
-          <div onClick = "checkEnabled()" class = "function">Contract Mint Status</div>
-          <div id = "mint-status" class = "output "></div>
-        </div>
-        <div>
-          <div onClick = "getPrice()" class = "function">Price</div>
-          <div  id = "price" class = "output"></div>
-        </div>
-        <div>
-          <div onClick = "getAmountOwned()" class = "function">Inventory</div>
-          <div id = "inventory" class = "output"></div>
-        </div>
-        <div>
-          <div onClick = "remainingSupply()"class = "function">Supply</div>
-          <div id = "token-left" class = "output"></div>
-        </div>
-          
+          <img style = "padding: 15px; width:20%;" src = "/images/nft_logo.png" />
+          <h3 style = "text-align:center;margin-bottom:30px;">Smart Contract Summary</h3>
+          <div>
+            <div onClick = "checkEnabled()" class = "function">Status</div>
+          </div>
+          <div>
+            <div onClick = "getPrice()" class = "function">Price</div>
+          </div>
+          <div>
+            <div onClick = "getAmountOwned()" class = "function">Inventory</div>
+          </div>
+          <div>
+            <div onClick = "remainingSupply()"class = "function">Supply</div>
+          </div>
+          <div id = "output" class = "output-console"><span style = "margin-bottom: 5px;font-weight: bold;">Output Console</span></div>
       </div>
       <div class = "mint_function">
         <div>
@@ -141,13 +138,13 @@
       //create the instance of smart contract
       const nftContract = new ethers.Contract(contractAddress, abi, signer);
       let mint_stat= await nftContract.isMintEnabled();
-      console.log(mint_stat)
+      //console.log(mint_stat)
       let status = "Minting is not enabled";
       if(mint_stat){
         status = "Minting is enabled"
       }
-      let obj = document.getElementById('mint-status');
-      obj.innerHTML = status;
+      let obj = document.getElementById('output');
+      obj.innerHTML += "<br>" + status;
     }
 
     //update the website to show the price to mint a token
@@ -164,8 +161,8 @@
       let price_hex= await nftContract.pricePerToken();
       //convert the hexadecimal price value into decimal form and then convert unit of Wei to ETH
       let price = ethers.utils.formatEther(parseInt(price_hex._hex, 16).toString());
-      let obj = document.getElementById('price');
-      obj.innerHTML = ('The minting price is' + price.toString() + 'ETH');
+      let obj = document.getElementById('output');
+      obj.innerHTML += ("<br>" + 'The minting price is ' + price.toString() + ' ETH');
     }
 
     //update the website to show the amount owned by the user
@@ -184,8 +181,8 @@
       let amount= await nftContract.mintedWallet(accounts[0]);
       //convert the hexadecimal price value into decimal form and then convert unit of Wei to ETH
       let inventory = parseInt(amount._hex, 16).toString();
-      let obj = document.getElementById('inventory');
-      obj.innerHTML = (inventory.toString() + ' Tokens Exist In Your Inventory');
+      let obj = document.getElementById('output');
+      obj.innerHTML += ("<br>" + inventory.toString() + ' Tokens Exist In Your Inventory');
     }
 
       //update the website to show the supply remaining
@@ -202,8 +199,8 @@
       let remaining= await nftContract.supplyRemaining();
       //convert the hexadecimal price value into decimal form and then convert unit of Wei to ETH
       let supply_remaining = parseInt(remaining._hex, 16).toString();
-      let obj = document.getElementById('token-left');
-      obj.innerHTML = (supply_remaining.toString() + ' Tokens remain to be minted');
+      let obj = document.getElementById('output');
+      obj.innerHTML += ("<br>" + supply_remaining.toString() + ' Tokens remain to be minted');
     }
 
     const mint = async() =>{
@@ -226,18 +223,29 @@
       try{
         if(balance >= price){ //checks to make sure balance of the account is greater than the price
           let nftTxn = await nftContract.mint({ value: ethers.utils.parseEther(price.toString()) });
+          let obj = document.getElementById('output');
+          obj.innerHTML += "<br>" + "<span style = 'background-color:green;color:white'>" + "Mining In Process"+ "</span>";
           console.log("Mining... please wait");
           await nftTxn.wait();
+          obj.innerHTML += "<br>"+ "<span style = 'background-color:green;color:white'>" + `${nftTxn.hash}`+ "</span>";
+          obj.innerHTML += "<br>"+ "<span style = 'background-color:green;color:white'>" + "Completed"+ "</span>";
           console.log(`${nftTxn.hash}`);
+          obj.innerHTML += "<br>"+ "<span style = 'background-color:green;color:white'>" + "Trying to open " + `https://rinkeby.etherscan.io/tx/${nftTxn.hash}` + "</span>";
           window.open(`https://rinkeby.etherscan.io/tx/${nftTxn.hash}`, '_blank');
         }
       }catch(error){
-        let obj = document.getElementById('status');
-        obj.innerHTML = error.data.message.toUpperCase();
+        let obj = document.getElementById('output');
+        obj.innerHTML += "<br>" + "<span style = 'background-color:tomato'>" + error.data.message.toUpperCase() + "</span>";
         //obj.innerHTML = error
-        obj.style.backgroundColor = "tomato";
         console.log(error);
       }
     }
+
+    //scrolls down to the bottom for the output
+    window.setInterval(function() {
+      //console.log('fired')
+      var elem = document.getElementById('output');
+      elem.scrollTop = elem.scrollHeight;
+    }, 3000);
   </script>
 </html>
