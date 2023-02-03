@@ -122,15 +122,17 @@
     const { ethereum } = window;
     var provider = new ethers.providers.Web3Provider(window.ethereum);
     var signer = provider.getSigner();
-    //uncc contract 
-    const contractAddress = "0x41bf860825ffdca01cd130a1cd3fc21088f04aa2";
+    //uncc contract
+    const contractAddress = "0x81e86d521cd3fb1acc0a9bedefdd5ce21cf61357";
+    //const contractAddress = "0x41bf860825ffdca01cd130a1cd3fc21088f04aa2";
     //const contractAddress = "0xb15275bE4573AFB78f084b97682BB68dd33084d6";
 
     //update the website to reflect the minting status
     const checkEnabled = async() =>{
       //import and parse the json that contains the function of the smart contract
       let contract;
-      const res = await fetch('./contracts/UNCCMintContract.json');
+      const res = await fetch('./contracts/new_UNCCMINT.json');
+      //const res = await fetch('./contracts/UNCCMintContract.json');
       //const res = await fetch('./contracts/NewMintNet.json');
       contract = await res.json();
       //information of the contract
@@ -151,14 +153,14 @@
     const getPrice = async() =>{
       //import and parse the json that contains the function of the smart contract
       let contract;
-      const res = await fetch('./contracts/UNCCMintContract.json');
+      const res = await fetch('./contracts/new_UNCCMINT.json');
       //const res = await fetch('./contracts/NewMintNet.json');
       contract = await res.json();
       //information of the contract
       const abi = contract.abi;
       //create the instance of smart contract
       const nftContract = new ethers.Contract(contractAddress, abi, signer);
-      let price_hex= await nftContract.pricePerToken();
+      let price_hex= await nftContract.mintPrice();
       //convert the hexadecimal price value into decimal form and then convert unit of Wei to ETH
       let price = ethers.utils.formatEther(parseInt(price_hex._hex, 16).toString());
       let obj = document.getElementById('output');
@@ -169,7 +171,7 @@
     const getAmountOwned = async() => {
       //import and parse the json that contains the function of the smart contract
       let contract;
-      const res = await fetch('./contracts/UNCCMintContract.json');
+      const res = await fetch('./contracts/new_UNCCMINT.json');
       //const res = await fetch('./contracts/NewMintNet.json');
       contract = await res.json();
       //information of the contract
@@ -189,14 +191,14 @@
       const remainingSupply = async() => {
       //import and parse the json that contains the function of the smart contract
       let contract;
-      const res = await fetch('./contracts/UNCCMintContract.json');
+      const res = await fetch('./contracts/new_UNCCMINT.json');
       //const res = await fetch('./contracts/NewMintNet.json');
       contract = await res.json();
       //information of the contract
       const abi = contract.abi;
       //create the instance of smart contract
       const nftContract = new ethers.Contract(contractAddress, abi, signer);
-      let remaining= await nftContract.supplyRemaining();
+      let remaining= await nftContract.getSupply();
       //convert the hexadecimal price value into decimal form and then convert unit of Wei to ETH
       let supply_remaining = parseInt(remaining._hex, 16).toString();
       let obj = document.getElementById('output');
@@ -206,7 +208,7 @@
     const mint = async() =>{
       //import and parse the json that contains the function of the smart contract
       let contract;
-      const res = await fetch('./contracts/UNCCMintContract.json');
+      const res = await fetch('./contracts/new_UNCCMINT.json');
       //const res = await fetch('./contracts/NewMintNet.json');
       contract = await res.json();
       //information of the contract
@@ -217,7 +219,7 @@
       const accounts = await ethereum.request({method: 'eth_accounts'});
       const balance = ethers.utils.formatEther(await provider.getBalance(accounts[0]));
       //the receiver of the transaction which is myself
-      test_set = "0xa8771787a37566246706f0e0eabe54f922f2dbb67ff2d20911fe95bcb93a72ad";
+      test_set = "0x858B95b3c3BAb3864D81D7D54d05b634EB374eB4";
       /*Calls the mint function in the smart contract*/
       const price = 0.05;
       try{
@@ -230,8 +232,8 @@
           obj.innerHTML += "<br>"+ "<span style = 'background-color:green;color:white'>" + `${nftTxn.hash}`+ "</span>";
           obj.innerHTML += "<br>"+ "<span style = 'background-color:green;color:white'>" + "Completed"+ "</span>";
           console.log(`${nftTxn.hash}`);
-          obj.innerHTML += "<br>"+ "<span style = 'background-color:green;color:white'>" + "Trying to open " + `https://rinkeby.etherscan.io/tx/${nftTxn.hash}` + "</span>";
-          window.open(`https://rinkeby.etherscan.io/tx/${nftTxn.hash}`, '_blank');
+          obj.innerHTML += "<br>"+ "<span style = 'background-color:green;color:white'>" + "Trying to open " + `https://goerli.etherscan.io/tx/${nftTxn.hash}` + "</span>";
+          window.open(`https://goerli.etherscan.io/tx/${nftTxn.hash}`, '_blank');
         }
       }catch(error){
         let obj = document.getElementById('output');
